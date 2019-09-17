@@ -106,4 +106,67 @@ object Solutions {
         case "GG" => (s._1, s._2, s._3, s._4, s._5, s._6, f(s._7))
         case _    => throw new RuntimeException("invalid category")
     }
+
+  /**
+   * QUESTION 3
+   */
+
+  val maximum: Int = 0
+  val average: Int = 1
+  val aaTotal: Int = 2
+  val ccTotal: Int = 3
+  val ffTotal: Int = 4
+
+  def q3Statistics(transactions: List[Transaction]):
+    Map[(Int, String), List[Double]] = {
+
+	  // Group all rows by date and account using groupByDayAndAccount
+	  val dayAndAccountGrouping: Map[(Int, String), List[(String, Double)]] =
+		groupByDayAndAccount(transactions)
+
+	  // Get all unique pairs (day, account) - we will map over this to get out
+	  // final results
+	  val allDayAndAccountPairs: List[(Int, String)] =
+		dayAndAccountGrouping.keys.toList
+
+	  // Map over the (day, account) pairings - for each pairing...
+	  allDayAndAccountPairs.map({
+		case (day, account) => {
+
+		  // Query the (day, account) grouping for all records on each relevant
+		  // day. Each record is a pair (category, amount)
+		  val relevantDaysData: List[(String, Double)] =
+			(List(1, day - 6).max to List(1, day - 1).max).toList.map(dayN =>
+			  dayAndAccountGrouping((dayN, account)))
+				.foldLeft(List[(String, Double)]())(_ ++ _)
+
+		  // Calculate the max by dropping the category info and using List.max
+		  val max: Double = relevantDaysData.map(_._2).max
+
+		  // Calculate the average by summing the amounts and dividing by the
+		  // total number of transactions in the relevant period
+		  val avg: Double =
+			relevantDaysData.map(_._2).sum / relevantDaysData.length
+
+		  // Calculate totals for the relevant categories by first filtering the
+	      // relevant transactions by that category and then summing
+		  val aaT: Double = relevantDaysData.filter(_._1 == "AA").map(_._2).sum
+		  val ccT: Double = relevantDaysData.filter(_._1 == "CC").map(_._2).sum
+		  val ffT: Double = relevantDaysData.filter(_._1 == "FF").map(_._2).sum
+
+		  // Return the calculated data for conversion into a map
+		  ((day, account), List(max, avg, aaT, ccT, ffT))
+		}
+	  }).toMap
+	}
+
+  def groupByDayAndAccount(transactions: List[Transaction]):
+    Map[(Int, String), List[(String, Double)]] =
+      transactions.foldLeft(Map[(Int, String), List[(String, Double)]]())({
+        case (map, Transaction(_, account, day, category, amount)) =>
+          map.updatedWith((day, account))({
+            case Some(l) => Some((category, amount) :: l)
+            case None    => Some(List((category, amount)))
+          })
+      })
 }
