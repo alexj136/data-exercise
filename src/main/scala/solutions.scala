@@ -68,17 +68,33 @@ object Solutions {
           })
       })
 
+  // Add an amount to a 7x2 tuple containing counts and running totals for all
+  // transaction categories. Simply add the supplied amount to the running total
+  // and increment the count by 1.
+  def addToCategory(category: String, amount: Double, categoryAmounts:
+    Seven[(Int, Double)]): Seven[(Int, Double)] =
+      applyToSevenByCategory(category, categoryAmounts, {
+        case (count, runningTotal) => (count + 1, amount + runningTotal)
+      })
+
   type Seven[T] = (T, T, T, T, T, T, T)
 
+  // Generate a Seven[T] of 7 copies of a given element x
   def sevenOf[T](x: T): Seven[T] = (x, x, x, x, x, x, x)
 
+  // Map a function T => U over all elements of a Seven[T] yielding a Seven[U]
   def mapSeven[T, U](f: T => U, xs: Seven[T]): Seven[U] = xs match {
     case (x1, x2, x3, x4, x5, x6, x7) =>
       (f(x1), f(x2), f(x3), f(x4), f(x5), f(x6), f(x7))
   }
 
+  // Initial running totals for the fold over the transaction list - 0
+  // transactions seen for a total value of 0.0, for each category
   val zeroed7IntDouble: Seven[(Int, Double)] = sevenOf((0, 0.0))
 
+  // Apply a function T => T to a single element of a Seven[T], selecting the
+  // element to apply the function to using a category String like the ones in
+  // the input data, of form "AA", "BB", ..., "GG".
   def applyToSevenByCategory[T](category: String, s: Seven[T], f: T => T):
     Seven[T] = category match {
         case "AA" => (f(s._1), s._2, s._3, s._4, s._5, s._6, s._7)
@@ -90,10 +106,4 @@ object Solutions {
         case "GG" => (s._1, s._2, s._3, s._4, s._5, s._6, f(s._7))
         case _    => throw new RuntimeException("invalid category")
     }
-
-  def addToCategory(category: String, amount: Double, categoryAmounts:
-    Seven[(Int, Double)]): Seven[(Int, Double)] =
-      applyToSevenByCategory(category, categoryAmounts, {
-        case (count, runningTotal) => (count + 1, amount + runningTotal)
-      })
 }
