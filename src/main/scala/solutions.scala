@@ -1,3 +1,5 @@
+import scala.math.Ordering.Double.TotalOrdering
+
 object Solutions {
 
   /**
@@ -141,11 +143,12 @@ object Solutions {
 				.foldLeft(List[(String, Double)]())(_ ++ _)
 
 		  // Calculate the max by dropping the category info and using List.max
-		  val max: Double = relevantDaysData.map(_._2).max
+		  val max: Double = if (relevantDaysData.isEmpty) 0.0 else
+            relevantDaysData.map(_._2).max
 
 		  // Calculate the average by summing the amounts and dividing by the
 		  // total number of transactions in the relevant period
-		  val avg: Double =
+		  val avg: Double = if(relevantDaysData.isEmpty) 0.0 else
 			relevantDaysData.map(_._2).sum / relevantDaysData.length
 
 		  // Calculate totals for the relevant categories by first filtering the

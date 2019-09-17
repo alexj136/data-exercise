@@ -1,5 +1,6 @@
 import org.scalacheck.{Properties, Gen}
 import org.scalacheck.Prop.forAll
+import org.scalatest.FunSuite
 
 object ExerciseProperties extends Properties("Exercise") {
 
@@ -84,4 +85,10 @@ object ExerciseProperties extends Properties("Exercise") {
             })
           )
     }
+}
+
+object ExerciseSuite extends FunSuite {
+  test("q3Statistics empty list test case") {
+    assert(true)
+  }
 }
