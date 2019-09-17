@@ -138,7 +138,7 @@ object Solutions {
 		  // Query the (day, account) grouping for all records on each relevant
 		  // day. Each record is a pair (category, amount)
 		  val relevantDaysData: List[(String, Double)] =
-			(List(1, day - 6).max to List(1, day - 1).max).toList.map(dayN =>
+            ((day - 5) to (day - 1)).filter(_ > 0).toList.map(dayN =>
 			  dayAndAccountGrouping((dayN, account)))
 				.foldLeft(List[(String, Double)]())(_ ++ _)
 

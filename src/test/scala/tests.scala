@@ -87,8 +87,31 @@ object ExerciseProperties extends Properties("Exercise") {
     }
 }
 
-object ExerciseSuite extends FunSuite {
+class ExerciseSuite extends FunSuite {
+
   test("q3Statistics empty list test case") {
-    assert(true)
+    assert(Solutions.q3Statistics(List()) == Map())
+  }
+
+  test("q3Statistics singleton list test case") {
+    val testDay: Int = 8
+    val results: Map[(Int, String), List[Double]] =
+      Solutions.q3Statistics(List(Transaction("T0005", "A1", 7, "FF", 3.58)))
+    assert(results((testDay, "A1"))(Solutions.maximum) == 3.58)
+  }
+
+  test("q3Statistics short example") {
+    val transactions: List[Transaction] = List(
+      Transaction("T0001", "A1", 3, "AA", 16.0),
+      Transaction("T0002", "A1", 4, "AA", 4.06),
+      Transaction("T0003", "A1", 5, "CC", 1.34),
+      Transaction("T0004", "A1", 6, "CC", 1.32),
+      Transaction("T0005", "A1", 7, "FF", 3.58),
+      Transaction("T0006", "A1", 8, "FF", 1.12)
+    )
+    val testDay: Int = 8
+    val results: Map[(Int, String), List[Double]] =
+      Solutions.q3Statistics(transactions)
+    assert(results((testDay, "A1"))(Solutions.maximum) == 16.0)
   }
 }
