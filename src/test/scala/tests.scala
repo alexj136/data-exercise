@@ -51,4 +51,37 @@ object ExerciseProperties extends Properties("Exercise") {
           case Transaction(_, _, day, _, _) => day == dayOfFirstTransaction
         }) map (_.transactionAmount)).sum
     }
+
+  /**
+   * Test that the task 2 solution yields as many rows as there are unique
+   * accounts in the input dataset. This ensures that no accounts are left out.
+   */
+  property("averagePerAccountAndType length equals number of unique accounts") =
+    forAll(gen0To1000Transactions) { transactions =>
+      Solutions.averagePerAccountAndType(transactions).size == (transactions map
+        { case Transaction(_, account, _, _, _) => account }).toSet.size
+    }
+
+  /**
+   * Test that the task 2 solution yields, for a specific account, amounts equal
+   * to filtering the input dataset by that account, and then summing the
+   * amounts for each transaction category. This ensures that account categories
+   * are summed correctly.
+   */
+  property("""averagePerAccountAndType for a given account equals first
+      filtering by that account and then summing for all categories""") =
+    forAll(genSomeTransactionsNonEmpty) { transactions =>
+      val accountOfFirstTransaction: String = transactions.head.accountId
+      Solutions.averagePerAccountAndType(transactions)(
+        accountOfFirstTransaction) ==
+          Solutions.mapSeven[(Int, Double), Double]({ case (count, amount) =>
+            if(count == 0) 0.0 else amount / count },
+            (transactions filter { case Transaction(_, account, _, _, _) =>
+                account == accountOfFirstTransaction
+            }).foldLeft(Solutions.sevenOf((0, 0.0)))({
+              case (categoryAmounts, Transaction(_, _, _, category, amount)) =>
+                Solutions.addToCategory(category, amount, categoryAmounts)
+            })
+          )
+    }
 }
