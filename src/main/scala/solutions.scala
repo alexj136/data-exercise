@@ -126,10 +126,19 @@ object Solutions {
 	  val dayAndAccountGrouping: Map[(Int, String), List[(String, Double)]] =
 		groupByDayAndAccount(transactions)
 
-	  // Get all unique pairs (day, account) - we will map over this to get out
-	  // final results
+      // Get all account names
+      val allAccounts: List[String] =
+        dayAndAccountGrouping.keys.map(_._2).toList
+
+      // Get all days in which queries will be valid - extends up to 5 days
+      // after the last transaction
+      val dayRange: List[Int] = if (dayAndAccountGrouping.isEmpty) List() else
+        (dayAndAccountGrouping.keys.map(_._1).min to
+          dayAndAccountGrouping.keys.map(_._1).max + 5).toList
+
+	  // Get all valid pairs (day, account) for which queries will be valid
 	  val allDayAndAccountPairs: List[(Int, String)] =
-		dayAndAccountGrouping.keys.toList
+        for(day <- dayRange; account <- allAccounts) yield (day, account)
 
 	  // Map over the (day, account) pairings - for each pairing...
 	  allDayAndAccountPairs.map({
@@ -139,7 +148,7 @@ object Solutions {
 		  // day. Each record is a pair (category, amount)
 		  val relevantDaysData: List[(String, Double)] =
             ((day - 5) to (day - 1)).filter(_ > 0).toList.map(dayN =>
-			  dayAndAccountGrouping((dayN, account)))
+			  dayAndAccountGrouping.getOrElse((dayN, account), List()))
 				.foldLeft(List[(String, Double)]())(_ ++ _)
 
 		  // Calculate the max by dropping the category info and using List.max

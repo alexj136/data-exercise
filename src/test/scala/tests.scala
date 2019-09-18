@@ -109,9 +109,9 @@ class ExerciseSuite extends FunSuite {
       Transaction("T0005", "A1", 7, "FF", 3.58),
       Transaction("T0006", "A1", 8, "FF", 1.12)
     )
-    val testDay: Int = 8
     val results: Map[(Int, String), List[Double]] =
       Solutions.q3Statistics(transactions)
-    assert(results((testDay, "A1"))(Solutions.maximum) == 16.0)
+    assert(results((8, "A1"))(Solutions.maximum) == 16.0)
+    assert(results((8, "A1"))(Solutions.aaTotal) == 20.06)
   }
 }
