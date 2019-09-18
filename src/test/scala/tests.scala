@@ -89,15 +89,28 @@ object ExerciseProperties extends Properties("Exercise") {
 
 class ExerciseSuite extends FunSuite {
 
+  /**
+   * These unit tests for question 3 are admittedly less extensive than for
+   * questions one and two, just testing some simple cases. Developing full
+   * property-based tests for a data structure like that returned by
+   * q3Statistics would be quite convoluted and take a long time, and equally,
+   * hard coding long examples to test would also take a long time and would
+   * quite likely contain mistakes itself so wouldn't be a very effective test.
+   * So I've opted to test some simple examples here.
+   */
+
   test("q3Statistics empty list test case") {
     assert(Solutions.q3Statistics(List()) == Map())
   }
 
   test("q3Statistics singleton list test case") {
-    val testDay: Int = 8
     val results: Map[(Int, String), List[Double]] =
       Solutions.q3Statistics(List(Transaction("T0005", "A1", 7, "FF", 3.58)))
-    assert(results((testDay, "A1"))(Solutions.maximum) == 3.58)
+    assert(results((8, "A1"))(Solutions.maximum) == 3.58)
+    assert(results((8, "A1"))(Solutions.average) == 3.58)
+    assert(results((8, "A1"))(Solutions.aaTotal) == 0.0)
+    assert(results((8, "A1"))(Solutions.ccTotal) == 0.0)
+    assert(results((8, "A1"))(Solutions.ffTotal) == 3.58)
   }
 
   test("q3Statistics short example") {
@@ -112,6 +125,14 @@ class ExerciseSuite extends FunSuite {
     val results: Map[(Int, String), List[Double]] =
       Solutions.q3Statistics(transactions)
     assert(results((8, "A1"))(Solutions.maximum) == 16.0)
+    assert(results((8, "A1"))(Solutions.average) == 5.26)
     assert(results((8, "A1"))(Solutions.aaTotal) == 20.06)
+    assert(results((8, "A1"))(Solutions.ccTotal) == 2.66)
+    assert(results((8, "A1"))(Solutions.ffTotal) == 3.58)
+    assert(results((10, "A1"))(Solutions.maximum) == 3.58)
+    assert(results((10, "A1"))(Solutions.average) == 1.84)
+    assert(results((10, "A1"))(Solutions.aaTotal) == 0.0)
+    assert(results((10, "A1"))(Solutions.ccTotal) == 2.66)
+    assert(results((10, "A1"))(Solutions.ffTotal) == 4.70)
   }
 }
